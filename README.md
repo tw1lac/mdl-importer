@@ -34,5 +34,9 @@ An example structure for loading a ghoul model would require:
 ~/Desktop/WC3Data/Textures/gutz.png
 ~/Desktop/WC3Data/Textures/Peasant.png
 ```
+For MDL Importer Ex
+------
+
+Add armature and anim's info import, but only auto rip armature with mesh. anim need todo.
 
 ![ghoul-in-blender](https://user-images.githubusercontent.com/2659328/36073557-a86824d4-0f2a-11e8-818d-64a96628a85d.jpg)
