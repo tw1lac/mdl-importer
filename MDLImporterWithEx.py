@@ -1,4 +1,4 @@
-#Copyright 2020
+#Copyright 2017 Yellow
 #
 #Permission is hereby granted, free of charge, to any person obtaining a copy 
 #of this software and associated documentation files (the "Software"), to deal
@@ -24,9 +24,9 @@ from bpy_extras.io_utils import ImportHelper
 from bpy.props import StringProperty
 
 bl_info = {
-	"name": "MDL ImporterEx",
+	"name": "MDL Importer",
 	"description": "Imports Warcraft 3 models",
-	"author": "Yellow&bingh",
+	"author": "Yellow",
 	"version": (0,1,5),
 	"blender": (2,7,8),
 	"location": "File > Import > WC3 MDL (.mdl)",
@@ -766,14 +766,21 @@ class Importer(bpy.types.Operator, ImportHelper):
 				
 				tex_image = nodes.new("ShaderNodeTexImage")
 
-				print('nodes.keys => ')
-				print(list(nodes.keys()))
-
+				#print('nodes.keys => ')
+				#print(list(nodes.keys()))
+				#keytmps = list(nodes.keys())
+				#for chinese
+				if "材质输出" in nodes.keys():
+					output = nodes["材质输出"]
+					diffuse = nodes["漫射 BSDF"]
+				else:
+					output = nodes["Material Output"]
+					diffuse = nodes["Diffuse BSDF"]
 				#['材质输出', '漫射 BSDF', '图像纹理']
 				#output = nodes["Material Output"]
-				output = nodes["材质输出"]
+				#output = nodes["材质输出"]
 				#diffuse = nodes["Diffuse BSDF"]
-				diffuse = nodes["漫射 BSDF"]
+				#diffuse = nodes["漫射 BSDF"]
 				mix = nodes.new("ShaderNodeMixShader")
 				blend_colour = None
 				rid = None
