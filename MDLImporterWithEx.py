@@ -1,4 +1,4 @@
-#Copyright 2017 Yellow
+#Copyright 2017 Yellow&bingh
 #
 #Permission is hereby granted, free of charge, to any person obtaining a copy 
 #of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,7 @@ from bpy.props import StringProperty
 bl_info = {
 	"name": "MDL Importer",
 	"description": "Imports Warcraft 3 models",
-	"author": "Yellow",
+	"author": "Yellow&bingh",
 	"version": (0,1,5),
 	"blender": (2,7,8),
 	"location": "File > Import > WC3 MDL (.mdl)",
@@ -377,7 +377,11 @@ class BoneParser(Parser):
 						label, data = line.split(":")
 						bonedata = BoneDataData()
 						bonedata.time = int(label)
-						[bonedata.val.append(float(v)) for v in data.replace("{", "").replace("}", "").replace(",", "").strip().split(" ")]
+						if bdata.name == "Translation":
+							#print("Find Translation!!!!!!!!!")
+							[bonedata.val.append(float(v) / 20.0) for v in data.replace("{", "").replace("}", "").replace(",", "").strip().split(" ")]
+						else:
+							[bonedata.val.append(float(v)) for v in data.replace("{", "").replace("}", "").replace(",", "").strip().split(" ")]
 						if(bdata.type.find('Linear') == -1):# not Linear
 							[bonedata.inTan.append(float(v)) for v in self.file.readline().replace("{", "").replace("}", "").replace(",", "").replace("InTan", "").strip().split(" ")]
 							[bonedata.outTan.append(float(v)) for v in self.file.readline().replace("{", "").replace("}", "").replace(",", "").replace("OutTan", "").strip().split(" ")]
@@ -625,6 +629,8 @@ bpy.ops.action.new(
 找到匹配bone（如果anim存在gid，则需要跟bone匹配）的 frames 集合（旋转、缩放、位移）
 （即bone.xxx.frame在anim的begin、end之间）（按先后排序）
 
+bpy.ops.anim.keyframe_insert_menu(type='LocRotScale', frame=?)
+
 这两个示例都在活动对象的Z轴上插入关键帧。
 
 简单的例子：
@@ -644,8 +650,98 @@ fcu_z.keyframe_points.add(2)
 fcu_z.keyframe_points[0].co = 10.0, 0.0
 fcu_z.keyframe_points[1].co = 20.0, 1.0
 
+================================================================================
+https://blender.stackexchange.com/questions/16084/how-to-animate-object-with-data-file/16088
+================================================================================
+import bpy
+
+... # read x,y,z and t from a file, assuming seconds for t
+
+# and do something like this in a loop for all keys:
+f = bpy.data.scenes["Scene"].render.fps * t + 1 # stub
+obj = bpy.data.objects["Cube"] # stub
+obj.location = [x,y,z]
+obj.keyframe_insert(data_path="location", frame=f)
+
+# make interpolation between keyframes linear
+for fc in obj.animation_data.action.fcurves: # stub
+    for kp in fc.keyframe_points:
+        kp.handle_left_type = 'VECTOR'
+        kp.handle_right_type = 'VECTOR'
+    fc.update()
+
+
+or
+================================================================================
+https://blender.stackexchange.com/questions/141761/script-for-rotating-multiple-selected-objects-and-insert-keyframes
+================================================================================
+import bpy
+from math import *  
+import mathutils
+
+scene = bpy.data.scenes["Scene"]
+scene.frame_start = 1
+scene.frame_end = 768
+
+ob = bpy.context.object
+
+bpy.context.scene.frame_set(24) # start with delay
+
+ob.rotation_euler = (0,0,0)
+
+bpy.ops.anim.keyframe_insert_menu(type='LocRotScale')
+
+bpy.context.scene.frame_set(120) #half rotation 1
+
+ob.rotation_euler = (0,0,3.14)
+
+bpy.ops.anim.keyframe_insert_menu(type='LocRotScale')
+
+'''
 
 def createAnim(mode):
+	#bpy.data.scenes["Scene"].transform_orientation = "Local"
+	bpy.data.scenes["Scene"].render.fps = 900
+	armature = bpy.data.objects[mode.name]
+	bpy.ops.object.select_all(action='DESELECT')
+	armature.select = True
+	bpy.context.scene.objects.active = armature
+	#姿态模式插入帧动画
+	bpy.ops.object.mode_set(mode='POSE')
+	#for simple animation for all bone!!!
+	for bone in mode.bones:
+		for bdata in bone.boneData:
+			for data in bdata.data:
+				obj = armature.pose.bones[bone.name]
+				obj.bone.select = True
+				orgLoc = [obj.location.x, obj.location.y, obj.location.z]
+				#obj = bpy.data.armatures[mode.name].pose_bones[bone.name]
+				#bpy.data.armatures[mode.name].pose_bones.active = obj # 激活某根骨头
+				#obj = bpy.data.objects[mode.name + ":" + bone.name]
+				#bpy.context.scene.frame_set(data.time)
+				if bdata.name.find("Rotation") >= 0:
+					obj.rotation_euler = (data.val[1], data.val[2], data.val[3])
+					obj.keyframe_insert(data_path="rotation_euler", frame=data.time)
+					print("[%s]obj.keyframe_insert rotation_euler %d" % (bone.name, data.time))
+				elif bdata.name.find("Translation") >= 0:
+					#print("data.val = %s" % (data.val))
+					obj.location = [data.val[1], data.val[2], data.val[3]]
+					obj.keyframe_insert(data_path="location", frame=data.time)
+					print("[%s]obj.keyframe_insert location %d" % (bone.name, data.time))
+				#rotation_euler scale location
+				#obj.keyframe_insert(data_path="location", frame=data.time)
+				#obj.keyframe_insert(data_path="rotation_euler", frame=data.time)
+				obj.rotation_euler = (0, 0, 0)
+				#print("orgLoc 2 = %s %s" % (orgLoc, obj.location))
+				obj.location = orgLoc
+				obj.bone.select = False
+	# make interpolation between keyframes linear
+	for fc in armature.animation_data.action.fcurves: # stub
+		for kp in fc.keyframe_points:
+			kp.handle_left_type = 'VECTOR'
+			kp.handle_right_type = 'VECTOR'
+		fc.update()
+	'''
 	armature = bpy.data.objects[mode.name]
 	for anim in model.anims:
 		obj = bpy.context.object
@@ -663,7 +759,7 @@ def createAnim(mode):
 						elif bdata.name = "Translation":
 							#TODO
 							fcu_z = obj.animation_data.action.fcurves.new(data_path="location", index=2)
-'''
+	'''
 #=========================================================> for END
 
 class Model(object):
@@ -862,6 +958,7 @@ class Importer(bpy.types.Operator, ImportHelper):
 			add_armature(model)
 			#Create VertexGroup for geoset
 			add_VertexGroup(model, objs, meshs)
+			createAnim(model)
 
 		return {"FINISHED"}
 
