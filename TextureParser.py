@@ -26,8 +26,10 @@ class TextureParser(Parser):
 
 					if label == "Image" and data:
 						texture.filepath = data.replace('"', "").replace("blp", "png")
+
 					elif label == "ReplaceableId":
 						texture.replaceable_id = int(data)
+
 					else:
 						print("Unknown data in texture: %s %s" % (label, data))
 						# raise Exception("Unknown data in texture: %s %s" % (label, data))

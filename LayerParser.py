@@ -14,11 +14,11 @@ class LayerParser(Parser):
 
 	def parse(self, context):
 		layer = Layer()
-		pars = 1
+		bracket_count = 1
 
-		line, pars = self.read(pars)
+		line, bracket_count = self.read(bracket_count)
 
-		while pars > 0:
+		while bracket_count > 0:
 			label, *data = line.split(" ")
 
 			if label == "static":
@@ -39,9 +39,9 @@ class LayerParser(Parser):
 					if len(data) > 1:
 						layer.material_alpha = MaterialAlpha()
 
-						line, pars = self.read(pars)
+						line, bracket_count = self.read(bracket_count)
 
-						while pars > 1:
+						while bracket_count > 1:
 							label, *data = line.replace(":", "").strip().split(" ")
 
 							if label in ["Linear", "Hermite", "Bezier", "DontInterp"]:
@@ -49,7 +49,7 @@ class LayerParser(Parser):
 							else:
 								layer.material_alpha.tracks[label] = data[0]
 
-							line, pars = self.read(pars)
+							line, bracket_count = self.read(bracket_count)
 					else:
 						layer.alpha = data[0]
 
@@ -58,6 +58,6 @@ class LayerParser(Parser):
 			else:
 				raise Exception("Unknown data in layer: %s %s" % (label, data))
 
-			line, pars = self.read(pars)
+			line, bracket_count = self.read(bracket_count)
 
 		return layer

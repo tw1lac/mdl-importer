@@ -29,8 +29,9 @@ class MDLParser(Parser):
 
 	def parse(self, context):
 		model = Model()
+
 		line = self.file.readline()
-		while(line):
+		while line:
 			label, *data = line.split(" ")
 
 			if label not in self.tokens:

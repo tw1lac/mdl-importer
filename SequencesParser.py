@@ -1,3 +1,4 @@
+from .utils import bracket_remover
 from .Anim import Anim
 from .Parser import Parser
 
@@ -8,33 +9,39 @@ class SequencesParser(Parser):
 
 	def parse(self, context, count):
 		anims = []
-		pars = 1
-		line, pars = self.read2(pars)
-		#print("1 line=%s pars=%d " % (line, pars))
-		while(pars > 0):
-			if(line.find("Anim") >= 0):
+		bracket_count = 1
+
+		line, bracket_count = self.read(bracket_count)
+		while bracket_count > 0:
+			if line.find("Anim") >= 0:
 				anim = Anim()
-				anim.name = line.replace("Anim", "").replace("{", "").replace("}", "").replace(",", "").strip()
-				line, pars = self.read2(pars)
-				#print("2 line=%s pars=%d " % (line, pars))
-				while(pars > 1):
-					if(line.find("Interval") >= 0):
-						frames = line.replace("Interval", "").replace("{", "").replace("}", "").replace(",", "").strip().split(" ")
+				anim.name = bracket_remover(line.replace("Anim", ""))
+
+				line, bracket_count = self.read(bracket_count)
+				while bracket_count > 1:
+					line = bracket_remover(line)
+					if line.find("Interval") >= 0:
+						frames = line.replace("Interval", "").strip().split(" ")
 						anim.start = frames[0]
 						anim.end = frames[1]
-					elif line.find("NonLooping") >= 0 :
+
+					elif line.find("NonLooping") >= 0:
 						anim.loop = False
-					elif line.find("MinimumExtent") >= 0 :
-						[anim.min.append(float(v)) for v in line.replace("MinimumExtent", "").replace("{", "").replace("}", "").replace(",", "").strip().split(" ")]
-					elif line.find("MaximumExtent") >= 0 :
-						[anim.max.append(float(v)) for v in line.replace("MaximumExtent", "").replace("{", "").replace("}", "").replace(",", "").strip().split(" ")]
-					elif line.find("BoundsRadius") >= 0 :
-						anim.radius = float(line.replace("BoundsRadius", "").replace("{", "").replace("}", "").replace(",", "").strip())
-					line, pars = self.read2(pars)
-				#Add it!!!
+
+					elif line.find("MinimumExtent") >= 0:
+						[anim.min.append(float(v)) for v in line.replace("MinimumExtent", "").strip().split(" ")]
+
+					elif line.find("MaximumExtent") >= 0:
+						[anim.max.append(float(v)) for v in line.replace("MaximumExtent", "").strip().split(" ")]
+
+					elif line.find("BoundsRadius") >= 0:
+						anim.radius = float(line.replace("BoundsRadius", "").strip())
+
+					line, bracket_count = self.read(bracket_count)
+
 				anims.append(anim)
 
-			line, pars = self.read2(pars)
+			line, bracket_count = self.read(bracket_count)
 
 		#prn_list(anims)
 

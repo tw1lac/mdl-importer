@@ -109,7 +109,6 @@ class Importer(bpy.types.Operator, ImportHelper):
 
 			# Load in the meshes, and UVs, and add the materials to the correct one
 			for i, geoset in enumerate(model.geosets):
-				print("i: ", i)
 				mesh = bpy.data.meshes.new("%s Mesh %i" % (model.name, i))
 				obj = bpy.data.objects.new("%s Mesh %i" % (model.name, i), mesh)
 				obj.location = (0.0, 0.0, 0.0)

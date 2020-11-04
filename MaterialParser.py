@@ -10,9 +10,9 @@ class MaterialParser(Parser):
 
 	def parse(self, context, count):
 		materials = []
-		pars = 1
+		bracket_count = 1
 
-		line, pars = self.read(pars)
+		line, bracket_count = self.read(bracket_count)
 
 		for _ in range(count):
 			label, *data = line.split(" ")
@@ -21,21 +21,21 @@ class MaterialParser(Parser):
 				material = Material()
 				materials.append(material)
 
-				line, pars = self.read(pars)
+				line, bracket_count = self.read(bracket_count)
 
-				while pars > 1:
+				while bracket_count > 1:
 					label, *data = line.split(" ")
 
 					if label == "Layer":
 						material.layers.append(self.layer_parser.parse(context))
-						pars -= 1
+						bracket_count -= 1
 					elif label in Material.FLAGS:
 						material.flags |= Material.FLAGS[label]
 					else:
 						raise Exception("Unknown data in material: %s %s" % (label, data))
 
-					line, pars = self.read(pars)
+					line, bracket_count = self.read(bracket_count)
 
-			line, pars = self.read(pars)
+			line, bracket_count = self.read(bracket_count)
 
 		return materials

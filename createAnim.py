@@ -16,10 +16,12 @@ def createAnim(model):
 			for data in bdata.data:
 				this_bone = armature.pose.bones[bone.name]
 				this_bone.bone.select = True
-				orgLoc = [this_bone.location.x, this_bone.location.y, this_bone.location.z]
-				# this_bone = bpy.data.armatures[mode.name].pose_bones[bone.name]
-				# bpy.data.armatures[mode.name].pose_bones.active = this_bone # 激活某根骨头
-				# this_bone = bpy.data.objects[mode.name + ":" + bone.name]
+				# orgLoc = [this_bone.location.x, this_bone.location.y, this_bone.location.z]
+				orgLoc = [this_bone.location[0], this_bone.location[1], this_bone.location[2]]
+
+				# this_bone = bpy.data.armatures[model.name].pose_bones[bone.name]
+				# bpy.data.armatures[model.name].pose_bones.active = this_bone # Activate a certain bone
+				# this_bone = bpy.data.objects[model.name + ":" + bone.name]
 				# bpy.context.scene.frame_set(data.time)
 				try:
 					if bdata.name.find("Rotation") >= 0:
@@ -47,7 +49,7 @@ def createAnim(model):
 			kp.handle_right_type = 'VECTOR'
 		fc.update()
 
-	# # armature = bpy.data.objects[mode.name]
+	# # armature = bpy.data.objects[model.name]
 	# for anim in model.anims:
 	# 	this_bone = bpy.context.object
 	# 	this_bone.animation_data_create()
