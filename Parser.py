@@ -6,11 +6,6 @@ class Parser(object):
 		pass
 
 	def count_brackets(self, bracket_count, line):
-		# line.strip('\n')
-		# if line.endswith("{"):
-		# 	bracket_count += 1
-		# elif line.endswith("}"):
-		# 	bracket_count -= 1
 		start_brackets = line.count('{')
 		end_brackets = line.count('}')
 		bracket_count += start_brackets

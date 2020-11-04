@@ -40,7 +40,6 @@ class Importer(bpy.types.Operator, ImportHelper):
 
 			# Create the materials
 			for i, material in enumerate(model.materials):
-
 				mat = bpy.data.materials.new("%s Material %i" % (model.name, i))
 				mat.use_nodes = True
 				mat.game_settings.alpha_blend = "CLIP"
@@ -50,9 +49,6 @@ class Importer(bpy.types.Operator, ImportHelper):
 
 				texture_node = nodes.new("ShaderNodeTexImage")
 
-				#print('nodes.keys => ')
-				#print(list(nodes.keys()))
-				#keytmps = list(nodes.keys())
 				#for chinese
 				if "材质输出" in nodes.keys():
 					output = nodes["材质输出"]
@@ -60,11 +56,7 @@ class Importer(bpy.types.Operator, ImportHelper):
 				else:
 					output = nodes["Material Output"]
 					diffuse = nodes["Diffuse BSDF"]
-				#['材质输出', '漫射 BSDF', '图像纹理']
-				#output = nodes["Material Output"]
-				#output = nodes["材质输出"]
-				#diffuse = nodes["Diffuse BSDF"]
-				#diffuse = nodes["漫射 BSDF"]
+
 				mix = nodes.new("ShaderNodeMixShader")
 				blend_colour = None
 				rid = None
@@ -85,7 +77,6 @@ class Importer(bpy.types.Operator, ImportHelper):
 						diffuse = nodes.new("ShaderNodeEmission")
 						diffuse.inputs[0].default_value = (0.0, 1.0, 0.0, 1.0)
 
-					#texture_node.image = bpy.data.images.load(os.path.expanduser("~/Desktop/WC3Data/" + tex.filepath))
 					image_path = ""
 					try:
 						image_path = os.path.expanduser("~/Desktop/WC3Data/" + tex.filepath)
@@ -96,7 +87,7 @@ class Importer(bpy.types.Operator, ImportHelper):
 					texture_image.source = 'FILE'
 					texture_image.filepath = image_path
 					texture_node.image = texture_image
-					# texture_node.image = bpy.data.images.load(image_path)
+
 					if not blend_colour:
 						blend_colour = nodes.new("ShaderNodeBsdfTransparent")
 						if rid == 2:
@@ -118,21 +109,27 @@ class Importer(bpy.types.Operator, ImportHelper):
 
 			# Load in the meshes, and UVs, and add the materials to the correct one
 			for i, geoset in enumerate(model.geosets):
-
+				print("i: ", i)
 				mesh = bpy.data.meshes.new("%s Mesh %i" % (model.name, i))
 				obj = bpy.data.objects.new("%s Mesh %i" % (model.name, i), mesh)
 				obj.location = (0.0, 0.0, 0.0)
 				bpy.context.scene.objects.link(obj)
 
-				mesh.vertices.add(len(geoset.vertices) // 3)
-				mesh.vertices.foreach_set("co", geoset.vertices)
+				geo_set = model.geosets[i]
 
-				mesh.tessfaces.add(len(geoset.faces) // 3)
-				mesh.tessfaces.foreach_set("vertices", geoset.faces)
+				num_vertices = len(geo_set.vertices)
+				num_faces = len(geo_set.faces)
+				mesh.vertices.add(num_vertices)
 
-				mesh.vertices.foreach_set("normal", geoset.normals)
+				mesh.tessfaces.add(num_faces)
 
-				mesh.update()
+				for j in range(num_vertices):
+					mesh.vertices[j].co = geo_set.vertices[j]
+					mesh.vertices[j].normal = (geo_set.normals[j][0], geo_set.normals[j][1], geo_set.normals[j][2])
+
+				for j in range(num_faces):
+					face_verts = geo_set.faces[j]
+					mesh.tessfaces[j].vertices_raw = (face_verts[0], face_verts[1], face_verts[2], 0)
 
 				vi_uv = {i: (u, 1.0 - v) for i, (u, v) in enumerate(geoset.uvs)}
 				per_loop_list = [0.0] * len(mesh.loops)
@@ -154,6 +151,7 @@ class Importer(bpy.types.Operator, ImportHelper):
 
 			#Load bones
 			add_armature(model)
+
 			#Create VertexGroup for geoset
 			add_VertexGroup(model, objs, meshs)
 			createAnim(model)
