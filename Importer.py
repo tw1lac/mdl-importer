@@ -48,7 +48,7 @@ class Importer(bpy.types.Operator, ImportHelper):
 				nodes = mat.node_tree.nodes
 				links = mat.node_tree.links
 
-				tex_image = nodes.new("ShaderNodeTexImage")
+				texture_node = nodes.new("ShaderNodeTexImage")
 
 				#print('nodes.keys => ')
 				#print(list(nodes.keys()))
@@ -85,8 +85,18 @@ class Importer(bpy.types.Operator, ImportHelper):
 						diffuse = nodes.new("ShaderNodeEmission")
 						diffuse.inputs[0].default_value = (0.0, 1.0, 0.0, 1.0)
 
-					#tex_image.image = bpy.data.images.load(os.path.expanduser("~/Desktop/WC3Data/" + tex.filepath))
-					tex_image.image = bpy.data.images.load("/home/bingh/下载/test.png")
+					#texture_node.image = bpy.data.images.load(os.path.expanduser("~/Desktop/WC3Data/" + tex.filepath))
+					image_path = ""
+					try:
+						image_path = os.path.expanduser("~/Desktop/WC3Data/" + tex.filepath)
+					except:
+						print("Not a valid filepath")
+					image_name = tex.filepath.split('\\')[-1].split('.')[0]
+					texture_image = bpy.data.images.new(image_name, 0, 0)
+					texture_image.source = 'FILE'
+					texture_image.filepath = image_path
+					texture_node.image = texture_image
+					# texture_node.image = bpy.data.images.load(image_path)
 					if not blend_colour:
 						blend_colour = nodes.new("ShaderNodeBsdfTransparent")
 						if rid == 2:
@@ -95,10 +105,10 @@ class Importer(bpy.types.Operator, ImportHelper):
 							blend_colour.inputs[0].default_value = (0.0, 0.0, 0.0, 1.0)
 
 				if rid == 2:
-					links.new(tex_image.outputs[0], mix.inputs[0])
+					links.new(texture_node.outputs[0], mix.inputs[0])
 				else:
-					links.new(tex_image.outputs[0], diffuse.inputs[0])
-					links.new(tex_image.outputs[1], mix.inputs[0])
+					links.new(texture_node.outputs[0], diffuse.inputs[0])
+					links.new(texture_node.outputs[1], mix.inputs[0])
 
 				links.new(blend_colour.outputs[0], mix.inputs[1])
 				links.new(diffuse.outputs[0], mix.inputs[2])
