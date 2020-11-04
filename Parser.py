@@ -5,31 +5,35 @@ class Parser(object):
 	def parse(self, context):
 		pass
 
-	def check_pars(self, pars, line):
-		line.strip('\n')
-		if line.endswith("{"):
-			pars += 1
-		elif line.endswith("}"):
-			pars -= 1
-		return pars
+	def count_brackets(self, bracket_count, line):
+		# line.strip('\n')
+		# if line.endswith("{"):
+		# 	bracket_count += 1
+		# elif line.endswith("}"):
+		# 	bracket_count -= 1
+		start_brackets = line.count('{')
+		end_brackets = line.count('}')
+		bracket_count += start_brackets
+		bracket_count -= end_brackets
+		return bracket_count
 
-	def read(self, pars):
+	def read(self, bracket_count):
 		line = self.file.readline().replace(",", "").strip()
-		pars = self.check_pars(pars, line)
-		return line, pars
+		bracket_count = self.count_brackets(bracket_count, line)
+		return line, bracket_count
 
-	def check_pars2(self, pars, line):
+	def count_brackets2(self, bracket_count, line):
 		line.strip('\n')
 		if line.find("{") > -1 and line.find("}") > -1:
 			#ignore such { }
-			return pars
+			return bracket_count
 		if line.endswith("{"):
-			pars += 1
+			bracket_count += 1
 		elif line.endswith("}"):
-			pars -= 1
-		return pars
+			bracket_count -= 1
+		return bracket_count
 
-	def read2(self, pars):
+	def read2(self, bracket_count):
 		line = self.file.readline().replace(",", "").strip()
-		pars = self.check_pars2(pars, line)
-		return line, pars
+		bracket_count = self.count_brackets2(bracket_count, line)
+		return line, bracket_count

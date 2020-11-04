@@ -12,7 +12,7 @@ class GeosetParser(Parser):
 		pars = 1
 
 		line = self.file.readline().strip()
-		pars = self.check_pars(pars, line)
+		pars = self.count_brackets(pars, line)
 
 		while pars > 0:
 			label, *data = line.split(" ")
