@@ -1,11 +1,12 @@
 import bpy
+import os
 from bpy.props import StringProperty
 from bpy_extras.io_utils import ImportHelper
 
-from MDLParser import MDLParser
-from add_VertexGroup import add_VertexGroup
-from add_armature import add_armature
-from createAnim import createAnim
+from .MDLParser import MDLParser
+from .add_VertexGroup import add_VertexGroup
+from .add_armature import add_armature
+from .createAnim import createAnim
 
 
 class Importer(bpy.types.Operator, ImportHelper):

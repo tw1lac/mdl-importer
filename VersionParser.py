@@ -1,4 +1,4 @@
-from Parser import Parser
+from .Parser import Parser
 
 
 class VersionParser(Parser):

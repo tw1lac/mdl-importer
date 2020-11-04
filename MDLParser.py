@@ -1,19 +1,19 @@
-from BoneParser import BoneParser
-from GeosetParser import GeosetParser
-from Model import Model
-from MaterialParser import MaterialParser
-from Parser import Parser
-from PivotPointsParser import PivotPointsParser
-from SequencesParser import SequencesParser
-from TextureParser import TextureParser
-from VersionParser import VersionParser
+from .BoneParser import BoneParser
+from .GeosetParser import GeosetParser
+from .Model import Model
+from .MaterialParser import MaterialParser
+from .Parser import Parser
+from .PivotPointsParser import PivotPointsParser
+from .SequencesParser import SequencesParser
+from .TextureParser import TextureParser
+from .VersionParser import VersionParser
 
 
 class MDLParser(Parser):
 	def __init__(self, file):
 		self.tokens = {
 			"Version": VersionParser(file),
-			"Model": None, # We only care about the model's name right now
+			"Model": None,  # We only care about the model's name right now
 			"Geoset": GeosetParser(file),
 			"Textures": TextureParser(file),
 			"Materials": MaterialParser(file),

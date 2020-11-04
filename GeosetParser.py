@@ -1,5 +1,5 @@
-from Geoset import Geoset
-from Parser import Parser
+from .Geoset import Geoset
+from .Parser import Parser
 
 
 class GeosetParser(Parser):
@@ -64,6 +64,6 @@ class GeosetParser(Parser):
 							geoset.uvs.append([float(v) for v in self.file.readline().replace("{", "").replace("}", "").replace(",", "").strip().split(" ")])
 
 			line = self.file.readline().strip()
-			pars = self.check_pars(pars, line)
+			pars = self.count_brackets(pars, line)
 
 		return geoset

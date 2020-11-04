@@ -24,7 +24,7 @@ from bpy_extras.io_utils import ImportHelper
 from bpy.props import StringProperty
 
 bl_info = {
-	"name": "MDL Importer",
+	"name": "OLD MDL Importer",
 	"description": "Imports Warcraft 3 models",
 	"author": "Yellow",
 	"version": (0,1,5),

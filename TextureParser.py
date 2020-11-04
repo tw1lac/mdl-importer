@@ -1,5 +1,5 @@
-from Parser import Parser
-from Texture import Texture
+from .Parser import Parser
+from .Texture import Texture
 
 
 class TextureParser(Parser):

@@ -1,5 +1,5 @@
-from Anim import Anim
-from Parser import Parser
+from .Anim import Anim
+from .Parser import Parser
 
 
 class SequencesParser(Parser):

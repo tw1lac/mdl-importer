@@ -18,15 +18,14 @@
 # DEALINGS IN THE SOFTWARE.
 
 import bpy
-
-from Importer import Importer
+from .Importer import Importer
 
 bl_info = {
     "name": "MDL Importer",
     "description": "Imports Warcraft 3 models",
     "author": "Yellow, bingh & twilac",
-    "version": (0, 1, 5),
-    "blender": (2, 7, 8),
+    "version": (0, 1, 6),
+    "blender": (2, 7, 9),
     "location": "File > Import > WC3 MDL (.mdl)",
     "category": "Import-Export"
 }
@@ -60,22 +59,24 @@ def prn_list2(obj):
 
 
 '''
-bpy.ops.action.new(
-找到匹配bone（如果anim存在gid，则需要跟bone匹配）的 frames 集合（旋转、缩放、位移）
-（即bone.xxx.frame在anim的begin、end之间）（按先后排序）
+bpy.ops.action.new(name='ACTION_NAME')
+# Find the frames collection (rotation, scaling, displacement)
+# that matches bone (if anim has gid, it needs to match bone)
+#（That is, bone.xxx.frame is between the begin and end of anim）（Sort by order）
 
 bpy.ops.anim.keyframe_insert_menu(type='LocRotScale', frame=?)
 
-这两个示例都在活动对象的Z轴上插入关键帧。
+Both examples insert keyframes on the Z axis of the active object.
 
-简单的例子：
+Simple example:
 
 obj = bpy.context.object
 obj.location[2] = 0.0
 obj.keyframe_insert(data_path="location", frame=10.0, index=2)
 obj.location[2] = 1.0
 obj.keyframe_insert(data_path="location", frame=20.0, index=2)
-使用低级功能：
+
+Use low-level functions:
 
 obj = bpy.context.object
 obj.animation_data_create()

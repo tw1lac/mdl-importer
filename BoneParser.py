@@ -1,7 +1,7 @@
-from Bone import Bone
-from BoneData import BoneData
-from BoneDataData import BoneDataData
-from Parser import Parser
+from .Bone import Bone
+from .BoneData import BoneData
+from .BoneDataData import BoneDataData
+from .Parser import Parser
 
 
 class BoneParser(Parser):

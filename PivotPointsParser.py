@@ -1,5 +1,5 @@
-from Parser import Parser
-from PivotPoint import PivotPoint
+from .Parser import Parser
+from .PivotPoint import PivotPoint
 
 
 class PivotPointsParser(Parser):

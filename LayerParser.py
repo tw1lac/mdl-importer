@@ -1,6 +1,6 @@
-from Layer import Layer
-from MaterialAlpha import MaterialAlpha
-from Parser import Parser
+from .Layer import Layer
+from .MaterialAlpha import MaterialAlpha
+from .Parser import Parser
 
 
 class LayerParser(Parser):
